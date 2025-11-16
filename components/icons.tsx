@@ -71,7 +71,7 @@ export const KidsStoriesLogo = (props: React.SVGProps<SVGSVGElement>) => (
         <rect x="105" y="62" width="3" height="3" />
         <rect x="115" y="64" width="3" height="3" />
         <rect x="125" y="66" width="3" height="3" />
-        <rect x="135" y="68" a" width="3" height="3" />
+        <rect x="135" y="68" width="3" height="3" />
         <rect x="145" y="71" width="3" height="3" />
         <rect x="155" y="74" width="3" height="3" />
         <rect x="165" y="77" width="3" height="3" />
