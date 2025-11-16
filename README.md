@@ -14,12 +14,11 @@ This contains everything you need to run your app locally.
     `npm install`
 
 2.  **Set up Environment Variables:**
-    Create a file named `.env.local` in the root of your project and add your API keys. You can get these from the Supabase dashboard and Google AI Studio.
+    Create a file named `.env.local` in the root of your project and add your Supabase keys. You can get these from your Supabase project dashboard under Project Settings > API.
 
     ```
     VITE_SUPABASE_URL="YOUR_SUPABASE_URL"
     VITE_SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY"
-    VITE_API_KEY="YOUR_GEMINI_API_KEY"
     ```
 
 3.  **Run the app:**

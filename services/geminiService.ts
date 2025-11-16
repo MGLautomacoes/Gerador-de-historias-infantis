@@ -7,22 +7,18 @@ const handleApiError = (error: any, context: string) => {
     if (error instanceof Error && error.message.includes('API key not valid')) {
          return new Error(`Chave de API inválida ou sem permissão para este modelo. Para gerar vídeos, por favor, selecione uma chave de API associada a um projeto com faturamento ativado.`);
     }
-    // Improved error for missing key
-    if (error instanceof Error && error.message.includes('API key not found')) {
-        return new Error(`Chave de API da Gemini (VITE_API_KEY) não encontrada. Por favor, adicione-a ao seu arquivo .env.local para gerar roteiros e imagens.`);
-    }
     return new Error(`Falha na comunicação com a API de IA (${context}). Verifique o console para mais detalhes.`);
 };
 
 /**
  * Creates a Gemini client instance on-demand.
- * Throws an error if the API key is not available in the environment variables.
+ * It relies on the API key being available in the environment, either through AI Studio's
+ * ambient authentication context or after a user selects a key for video generation.
  */
 const getClient = () => {
+    // When running inside AI Studio, VITE_API_KEY is handled by the environment.
+    // The SDK will use the environment's authentication if apiKey is undefined.
     const apiKey = import.meta.env.VITE_API_KEY;
-    if (!apiKey) {
-        throw new Error('API key not found');
-    }
     return new GoogleGenAI({ apiKey });
 };
 
@@ -206,7 +202,7 @@ export const generateVideoFromImageAndText = async (prompt: string, imageUrl: st
             throw new Error('Falha ao obter o link de download do vídeo.');
         }
 
-        // Fetch the video data using the download link
+        // Fetch the video data using the download link. AI Studio injects the key.
         const videoResponse = await fetch(`${downloadLink}&key=${import.meta.env.VITE_API_KEY}`);
         if (!videoResponse.ok) {
             throw new Error(`Falha ao baixar o vídeo. Status: ${videoResponse.statusText}`);

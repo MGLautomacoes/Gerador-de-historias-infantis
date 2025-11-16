@@ -300,7 +300,7 @@ const OrchestratorPage: React.FC = () => {
 
         // --- API KEY CHECKING LOGIC ---
         if (animateScenes && animationProvider === 'gemini') {
-            // Case 1: Video with Gemini. Use the studio key for everything.
+            // Case 1: Video with Gemini. Requires a user-selected, billing-enabled key.
             // @ts-ignore
             const hasKey = await window.aistudio.hasSelectedApiKey();
             if (!hasKey) {
@@ -308,18 +308,12 @@ const OrchestratorPage: React.FC = () => {
                 setNeedsApiKeySelection(true);
                 return; // Stop, let user click the button to select a key.
             }
-        } else {
-            // Case 2: No Gemini video. Check for the .env.local key for text/images.
-            if (!import.meta.env.VITE_API_KEY) {
-                setError('Para gerar roteiro e imagens, por favor, configure sua VITE_API_KEY no arquivo .env.local.');
-                return;
-            }
-            // Also check for OpenAI key if that's the selected provider for animation
-            if (animateScenes && animationProvider === 'openai' && !openAiApiKey) {
-                setError('Por favor, insira sua chave de API da OpenAI para animar as cenas.');
-                return;
-            }
+        } else if (animateScenes && animationProvider === 'openai' && !openAiApiKey) {
+            // Case 2: Video with OpenAI. Check for the user-provided key.
+            setError('Por favor, insira sua chave de API da OpenAI para animar as cenas.');
+            return;
         }
+        // Case 3 (default): Script/image generation uses ambient AI Studio auth. No key check needed.
         
         setProductionPlan(null);
 
