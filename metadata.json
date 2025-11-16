@@ -1,0 +1,5 @@
+{
+  "name": "Orquestrador de Historias",
+  "description": "A powerful tool for screenwriters and directors to generate detailed 3D animation production plans. Input your story idea, select characters from a consistency library, and receive a complete JSON-based script with prompts for dialogue, imagery, animation, and camera movements, all powered by Gemini.",
+  "requestFramePermissions": []
+}
