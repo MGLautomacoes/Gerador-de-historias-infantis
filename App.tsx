@@ -14,7 +14,8 @@ import InviteUserModal from './components/InviteUserModal';
 import N8NWebhookManager from './components/N8NWebhookManager';
 import { saasService } from './services/authService';
 import { supabase, supabaseInitializationError } from './services/supabase';
-import { Session } from '@supabase/supabase-js';
+// FIX: Import Session type from @supabase/auth-js to fix type resolution issues.
+import { Session } from '@supabase/auth-js';
 import { webhookService } from './services/webhookService';
 
 // ==================================================================================

@@ -1,17 +1,15 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// FIX: Hardcode Supabase credentials to resolve the "Cannot read properties of undefined" error.
-// This ensures the application can connect to Supabase immediately in the current environment
-// without needing environment variables to be configured.
-const supabaseUrl = "https://supabasecontabo.mglautomacoes.com.br";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzE1MDUwODAwLAogICJleHAiOiAxODcyODE3MjAwCn0.KqQkYvVu4QP4Ubeo35suKDA-WTmKdeE3JWkO5bNDq6k";
+// FIX: Read Supabase credentials from environment variables for security and best practices.
+// VITE_ prefix is necessary for Vite to expose these variables to the client-side app.
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 let supabaseInstance: SupabaseClient | null = null;
 let error: string | null = null;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  // This block is now unlikely to be hit, but kept for safety.
-  error = "As credenciais do Supabase não foram definidas diretamente no código.";
+  error = "As credenciais do Supabase (VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY) não foram encontradas nas variáveis de ambiente.";
 } else {
   supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {

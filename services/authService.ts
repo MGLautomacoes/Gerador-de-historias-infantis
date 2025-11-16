@@ -1,6 +1,7 @@
 import { supabase, supabaseInitializationError } from './supabase';
 import { User, UserStatus, UserRole } from '../types';
-import { Session } from '@supabase/supabase-js';
+// FIX: Import Session type from @supabase/auth-js to fix type resolution issues.
+import { Session } from '@supabase/auth-js';
 import { webhookService } from './webhookService';
 
 const getSupabaseClient = () => {

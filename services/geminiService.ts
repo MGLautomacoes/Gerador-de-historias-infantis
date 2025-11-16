@@ -1,8 +1,8 @@
 import { GoogleGenAI, Modality } from '@google/genai';
 
 // Initialize the Gemini client.
-// The API key is automatically provided by the AI Studio environment.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// The API key is loaded from environment variables.
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
 // Helper to handle errors gracefully
 const handleApiError = (error: any, context: string) => {
@@ -158,7 +158,7 @@ export const generateImageFromTextAndImage = async (prompt: string, referenceIma
 export const generateVideoFromImageAndText = async (prompt: string, imageUrl: string): Promise<string> => {
     try {
         // Create a new client instance for each call to ensure the latest API key is used
-        const videoAi = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const videoAi = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
         
         const base64Data = imageUrl.split(',')[1];
         if (!base64Data) {
@@ -191,7 +191,7 @@ export const generateVideoFromImageAndText = async (prompt: string, imageUrl: st
         }
 
         // Fetch the video data using the download link
-        const videoResponse = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
+        const videoResponse = await fetch(`${downloadLink}&key=${import.meta.env.VITE_API_KEY}`);
         if (!videoResponse.ok) {
             throw new Error(`Falha ao baixar o vídeo. Status: ${videoResponse.statusText}`);
         }
