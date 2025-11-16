@@ -283,6 +283,7 @@ const OrchestratorPage: React.FC = () => {
         await window.aistudio.openSelectKey();
         setNeedsApiKeySelection(false);
         setError(null);
+        // Resubmit the form after key selection
         handleSubmit(new Event('submit') as unknown as React.FormEvent);
     };
 
@@ -297,20 +298,26 @@ const OrchestratorPage: React.FC = () => {
         setLimitError(false);
         setNeedsApiKeySelection(false);
 
-        if (animateScenes) {
-            if (animationProvider === 'openai') {
-                if (!openAiApiKey) {
-                    setError('Por favor, insira sua chave de API da OpenAI para animar as cenas.');
-                    return;
-                }
-            } else { // Gemini
-                 // @ts-ignore
-                const hasKey = await window.aistudio.hasSelectedApiKey();
-                if (!hasKey) {
-                    setError('Para animar com Gemini, selecione uma Chave de API com faturamento ativado.');
-                    setNeedsApiKeySelection(true);
-                    return;
-                }
+        // --- API KEY CHECKING LOGIC ---
+        if (animateScenes && animationProvider === 'gemini') {
+            // Case 1: Video with Gemini. Use the studio key for everything.
+            // @ts-ignore
+            const hasKey = await window.aistudio.hasSelectedApiKey();
+            if (!hasKey) {
+                setError('Para animar com Gemini, selecione uma Chave de API com faturamento ativado.');
+                setNeedsApiKeySelection(true);
+                return; // Stop, let user click the button to select a key.
+            }
+        } else {
+            // Case 2: No Gemini video. Check for the .env.local key for text/images.
+            if (!import.meta.env.VITE_API_KEY) {
+                setError('Para gerar roteiro e imagens, por favor, configure sua VITE_API_KEY no arquivo .env.local.');
+                return;
+            }
+            // Also check for OpenAI key if that's the selected provider for animation
+            if (animateScenes && animationProvider === 'openai' && !openAiApiKey) {
+                setError('Por favor, insira sua chave de API da OpenAI para animar as cenas.');
+                return;
             }
         }
         

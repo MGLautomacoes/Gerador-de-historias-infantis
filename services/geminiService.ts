@@ -1,9 +1,5 @@
 import { GoogleGenAI, Modality } from '@google/genai';
 
-// Initialize the Gemini client.
-// The API key is loaded from environment variables.
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
-
 // Helper to handle errors gracefully
 const handleApiError = (error: any, context: string) => {
     console.error(`Gemini API error (${context}):`, error);
@@ -11,8 +7,25 @@ const handleApiError = (error: any, context: string) => {
     if (error instanceof Error && error.message.includes('API key not valid')) {
          return new Error(`Chave de API inválida ou sem permissão para este modelo. Para gerar vídeos, por favor, selecione uma chave de API associada a um projeto com faturamento ativado.`);
     }
+    // Improved error for missing key
+    if (error instanceof Error && error.message.includes('API key not found')) {
+        return new Error(`Chave de API da Gemini (VITE_API_KEY) não encontrada. Por favor, adicione-a ao seu arquivo .env.local para gerar roteiros e imagens.`);
+    }
     return new Error(`Falha na comunicação com a API de IA (${context}). Verifique o console para mais detalhes.`);
 };
+
+/**
+ * Creates a Gemini client instance on-demand.
+ * Throws an error if the API key is not available in the environment variables.
+ */
+const getClient = () => {
+    const apiKey = import.meta.env.VITE_API_KEY;
+    if (!apiKey) {
+        throw new Error('API key not found');
+    }
+    return new GoogleGenAI({ apiKey });
+};
+
 
 /**
  * Generates a detailed production plan including script, image prompts, and director prompts.
@@ -67,6 +80,7 @@ ${characterDescriptions}
 `;
 
     try {
+        const ai = getClient();
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-pro',
             contents: userPrompt,
@@ -87,6 +101,7 @@ ${characterDescriptions}
  */
 export const generateImageFromText = async (prompt: string): Promise<string> => {
     try {
+        const ai = getClient();
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-image',
             contents: {
@@ -115,6 +130,7 @@ export const generateImageFromText = async (prompt: string): Promise<string> => 
  */
 export const generateImageFromTextAndImage = async (prompt: string, referenceImageUrls: string[]): Promise<string> => {
     try {
+        const ai = getClient();
         const imageParts = referenceImageUrls.map(url => {
             const base64Data = url.split(',')[1];
             if (!base64Data) {
@@ -158,7 +174,7 @@ export const generateImageFromTextAndImage = async (prompt: string, referenceIma
 export const generateVideoFromImageAndText = async (prompt: string, imageUrl: string): Promise<string> => {
     try {
         // Create a new client instance for each call to ensure the latest API key is used
-        const videoAi = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
+        const videoAi = getClient();
         
         const base64Data = imageUrl.split(',')[1];
         if (!base64Data) {
